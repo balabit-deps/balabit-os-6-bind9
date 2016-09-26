@@ -1,0 +1,13 @@
+02_version.diff
+05_non-linux.diff
+07_multiarch.diff
+10_min-cache-ttl.diff
+20_random_1.diff
+25_library_paths.diff
+30_dynamic_db.diff
+32_mips_atomic.diff
+33_resource_missing_include.diff
+34_prepare_native_pkcs11.diff
+70_precise_time.diff
+75_ctxstart_no_sighandling.diff
+CVE-2016-2776.patch
