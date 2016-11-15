@@ -11,3 +11,4 @@
 70_precise_time.diff
 75_ctxstart_no_sighandling.diff
 CVE-2016-2776.patch
+CVE-2016-8864.patch

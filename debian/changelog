@@ -1,3 +1,20 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.3) xenial; urgency=medium
+
+  * Add RemainAfterExit to bind9-resolvconf unit configuration file
+    (LP: #1536181).
+
+ -- Nishanth Aravamudan <nish.aravamudan@canonical.com>  Tue, 15 Nov 2016 08:30:31 -0800
+
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.2) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: denial of service via responses containing a DNAME
+    answer
+    - debian/patches/CVE-2016-8864.patch: remove assertion failure in
+      lib/dns/resolver.c.
+    - CVE-2016-8864
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 31 Oct 2016 08:56:39 -0400
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.1) xenial-security; urgency=medium
 
   * SECURITY UPDATE: denial of service via assertion failure
