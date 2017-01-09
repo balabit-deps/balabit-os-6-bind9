@@ -1,3 +1,26 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.4) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: assertion failure via class mismatch
+    - debian/patches/CVE-2016-9131.patch: properly handle certain TKEY
+      records in lib/dns/resolver.c.
+    - CVE-2016-9131
+  * SECURITY UPDATE: assertion failure via inconsistent DNSSEC information
+    - debian/patches/CVE-2016-9147.patch: fix logic when records are
+      returned without the requested data in lib/dns/resolver.c.
+    - CVE-2016-9147
+  * SECURITY UPDATE: assertion failure via unusually-formed DS record
+    - debian/patches/CVE-2016-9444.patch: handle missing RRSIGs in
+      lib/dns/message.c, lib/dns/resolver.c.
+    - CVE-2016-9444
+  * SECURITY UPDATE: regression in CVE-2016-8864 
+    - debian/patches/rt43779.patch: properly handle CNAME -> DNAME in
+      responses in lib/dns/resolver.c, added tests to
+      bin/tests/system/dname/ns2/example.db,
+      bin/tests/system/dname/tests.sh.
+    - No CVE number
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 09 Jan 2017 08:50:20 -0500
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.3) xenial; urgency=medium
 
   * Add RemainAfterExit to bind9-resolvconf unit configuration file

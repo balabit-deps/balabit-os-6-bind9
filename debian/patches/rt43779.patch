@@ -1,0 +1,173 @@
+commit 7a5837e0b4b6fc8d18751674f4df4951c87fd6a6
+Author: Mark Andrews <marka@isc.org>
+Date:   Fri Dec 9 12:50:18 2016 +1100
+
+    4530.   [bug]           Change 4489 broke the handling of CNAME -> DNAME
+                            in responses resulting in SERVFAIL being returned.
+                            [RT #43779]
+    
+    (cherry picked from commit 60cb462c56536f307fac4db8bdebf1247e2b5f66)
+
+#diff --git a/CHANGES b/CHANGES
+#index 4b89cb4..a82bdbe 100644
+#--- a/CHANGES
+#+++ b/CHANGES
+#@@ -1,5 +1,9 @@
+# 	--- 9.10.4-P5 released ---
+# 
+#+4530.	[bug]		Change 4489 broke the handling of CNAME -> DNAME
+#+			in responses resulting in SERVFAIL being returned.
+#+			[RT #43779]
+#+
+# 4528.	[bug]		Only set the flag bits for the i/o we are waiting
+# 			for on EPOLLERR or EPOLLHUP. [RT #43617]
+# 
+Index: bind9-9.10.3.dfsg.P4/bin/tests/system/dname/ns2/example.db
+===================================================================
+--- bind9-9.10.3.dfsg.P4.orig/bin/tests/system/dname/ns2/example.db	2017-01-09 08:37:33.573919227 -0500
++++ bind9-9.10.3.dfsg.P4/bin/tests/system/dname/ns2/example.db	2017-01-09 08:37:33.565919131 -0500
+@@ -29,4 +29,6 @@
+ short-dname		DNAME	short
+ a.longlonglonglonglonglonglonglonglonglonglonglonglong	A 10.0.0.2
+ long-dname		DNAME	longlonglonglonglonglonglonglonglonglonglonglonglong
+-;
++cname			CNAME	a.cnamedname
++cnamedname		DNAME	target
++a.target		A	10.0.0.3
+Index: bind9-9.10.3.dfsg.P4/bin/tests/system/dname/tests.sh
+===================================================================
+--- bind9-9.10.3.dfsg.P4.orig/bin/tests/system/dname/tests.sh	2017-01-09 08:37:33.573919227 -0500
++++ bind9-9.10.3.dfsg.P4/bin/tests/system/dname/tests.sh	2017-01-09 08:37:33.565919131 -0500
+@@ -63,6 +63,24 @@
+ if [ $ret != 0 ]; then echo "I:failed"; fi
+ status=`expr $status + $ret`
+ 
++echo "I:checking cname to dname from authoritative"
++ret=0
++$DIG cname.example @10.53.0.2 a -p 5300 > dig.out.ns2.cname
++grep "status: NOERROR" dig.out.ns2.cname > /dev/null || ret=1
++if [ $ret != 0 ]; then echo "I:failed"; fi
++status=`expr $status + $ret`
++
++echo "I:checking cname to dname from recursive"
++ret=0
++$DIG cname.example @10.53.0.4 a -p 5300 > dig.out.ns4.cname
++grep "status: NOERROR" dig.out.ns4.cname > /dev/null || ret=1
++grep '^cname.example.' dig.out.ns4.cname > /dev/null || ret=1
++grep '^cnamedname.example.' dig.out.ns4.cname > /dev/null || ret=1
++grep '^a.cnamedname.example.' dig.out.ns4.cname > /dev/null || ret=1
++grep '^a.target.example.' dig.out.ns4.cname > /dev/null || ret=1
++if [ $ret != 0 ]; then echo "I:failed"; fi
++status=`expr $status + $ret`
++
+ echo "I:exit status: $status"
+ 
+ exit $status
+Index: bind9-9.10.3.dfsg.P4/lib/dns/resolver.c
+===================================================================
+--- bind9-9.10.3.dfsg.P4.orig/lib/dns/resolver.c	2017-01-09 08:37:33.573919227 -0500
++++ bind9-9.10.3.dfsg.P4/lib/dns/resolver.c	2017-01-09 08:37:33.569919179 -0500
+@@ -6726,7 +6726,7 @@
+ answer_response(fetchctx_t *fctx) {
+ 	isc_result_t result;
+ 	dns_message_t *message;
+-	dns_name_t *name, *dname = NULL, *qname, *dqname, tname, *ns_name;
++	dns_name_t *name, *dname = NULL, *qname, tname, *ns_name;
+ 	dns_name_t *cname = NULL;
+ 	dns_rdataset_t *rdataset, *ns_rdataset;
+ 	isc_boolean_t done, external, chaining, aa, found, want_chaining;
+@@ -6734,7 +6734,7 @@
+ 	isc_boolean_t wanted_chaining;
+ 	unsigned int aflag;
+ 	dns_rdatatype_t type;
+-	dns_fixedname_t fdname, fqname, fqdname;
++	dns_fixedname_t fdname, fqname;
+ 	dns_view_t *view;
+ 
+ 	FCTXTRACE("answer_response");
+@@ -6758,13 +6758,12 @@
+ 		aa = ISC_TRUE;
+ 	else
+ 		aa = ISC_FALSE;
+-	dqname = qname = &fctx->name;
++	qname = &fctx->name;
+ 	type = fctx->type;
+ 	view = fctx->res->view;
+-	dns_fixedname_init(&fqdname);
+ 	result = dns_message_firstname(message, DNS_SECTION_ANSWER);
+ 	while (!done && result == ISC_R_SUCCESS) {
+-		dns_namereln_t namereln, dnamereln;
++		dns_namereln_t namereln;
+ 		int order;
+ 		unsigned int nlabels;
+ 
+@@ -6772,8 +6771,6 @@
+ 		dns_message_currentname(message, DNS_SECTION_ANSWER, &name);
+ 		external = ISC_TF(!dns_name_issubdomain(name, &fctx->domain));
+ 		namereln = dns_name_fullcompare(qname, name, &order, &nlabels);
+-		dnamereln = dns_name_fullcompare(dqname, name, &order,
+-						 &nlabels);
+ 		if (namereln == dns_namereln_equal) {
+ 			wanted_chaining = ISC_FALSE;
+ 			for (rdataset = ISC_LIST_HEAD(name->list);
+@@ -7026,11 +7023,24 @@
+ 					return (DNS_R_FORMERR);
+ 				}
+ 
+-				if (dnamereln != dns_namereln_subdomain) {
++				/*
++				 * If DNAME + synthetic CNAME then the
++				 * namereln is dns_namereln_subdomain.
++				 *
++				 * If synthetic CNAME + DNAME then the
++				 * namereln is dns_namereln_commonancestor
++				 * and the number of label must match the
++				 * DNAME.  This order is not RFC compliant.
++				 */
++
++				if (namereln != dns_namereln_subdomain &&
++				    (namereln != dns_namereln_commonancestor ||
++				     nlabels != dns_name_countlabels(name)))
++				{
+ 					char qbuf[DNS_NAME_FORMATSIZE];
+ 					char obuf[DNS_NAME_FORMATSIZE];
+ 
+-					dns_name_format(dqname, qbuf,
++					dns_name_format(qname, qbuf,
+ 							sizeof(qbuf));
+ 					dns_name_format(name, obuf,
+ 							sizeof(obuf));
+@@ -7045,7 +7055,7 @@
+ 					want_chaining = ISC_TRUE;
+ 					POST(want_chaining);
+ 					aflag = DNS_RDATASETATTR_ANSWER;
+-					result = dname_target(rdataset, dqname,
++					result = dname_target(rdataset, qname,
+ 							      nlabels, &fdname);
+ 					if (result == ISC_R_NOSPACE) {
+ 						/*
+@@ -7062,13 +7072,11 @@
+ 
+ 					dname = dns_fixedname_name(&fdname);
+ 					if (!is_answertarget_allowed(view,
+-						     dqname, rdataset->type,
++						     qname, rdataset->type,
+ 						     dname, &fctx->domain))
+ 					{
+ 						return (DNS_R_SERVFAIL);
+ 					}
+-					dqname = dns_fixedname_name(&fqdname);
+-					dns_name_copy(dname, dqname, NULL);
+ 				} else {
+ 					/*
+ 					 * We've found a signature that
+@@ -7214,7 +7222,8 @@
+ 						rdataset->trust =
+ 						    dns_trust_additional;
+ 
+-					if (rdataset->type == dns_rdatatype_ns) {
++					if (rdataset->type == dns_rdatatype_ns)
++					{
+ 						ns_name = name;
+ 						ns_rdataset = rdataset;
+ 					}
