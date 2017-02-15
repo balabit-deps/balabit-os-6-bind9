@@ -16,3 +16,5 @@ CVE-2016-9131.patch
 CVE-2016-9147.patch
 CVE-2016-9444.patch
 rt43779.patch
+CVE-2017-3135.patch
+rt44318.patch

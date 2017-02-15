@@ -1,3 +1,20 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.5) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: Combining dns64 and rpz can result in dereferencing
+    a NULL pointer
+    - debian/patches/CVE-2017-3135.patch: properly handle dns64 and rpz
+      combination in bin/named/query.c, lib/dns/message.c,
+      lib/dns/rdataset.c.
+    - CVE-2017-3135
+  * SECURITY UPDATE: regression in CVE-2016-8864
+    - debian/patches/rt44318.patch: synthesised CNAME before matching DNAME
+      was still being cached when it should have been in lib/dns/resolver.c,
+      added tests to bin/tests/system/dname/ans3/ans.pl,
+      bin/tests/system/dname/ns1/root.db, bin/tests/system/dname/tests.sh.
+    - No CVE number
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 15 Feb 2017 10:29:00 -0500
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.4) xenial-security; urgency=medium
 
   * SECURITY UPDATE: assertion failure via class mismatch
