@@ -1,3 +1,23 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.6) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: Denial of Service due to an error handling
+    synthesized records when using DNS64 with "break-dnssec yes;"
+    - debian/patches/CVE-2017-3136.patch: reset noqname if query_dns64()
+      called.
+    - CVE-2017-3136
+  * SECURITY UPDATE: Denial of Service due to resolver terminating when
+    processing a response packet containing a CNAME or DNAME
+    - debian/patches/CVE-2017-3137.patch: don't expect a specific
+      ordering of answer components; add testcases.
+    - CVE-2017-3137
+  * SECURITY UPDATE: Denial of Service when receiving a null command on
+    the control channel
+    - debian/patches/CVE-2017-3138.patch: don't throw an assert if no
+      command token is given; add testcase.
+    - CVE-2017-3138
+
+ -- Steve Beattie <sbeattie@ubuntu.com>  Wed, 12 Apr 2017 00:57:50 -0700
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.5) xenial-security; urgency=medium
 
   * SECURITY UPDATE: Combining dns64 and rpz can result in dereferencing
