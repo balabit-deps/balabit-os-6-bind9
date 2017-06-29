@@ -1,3 +1,13 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.7) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: TSIG authentication issues
+    - debian/patches/CVE-2017-3042,3043.patch: fix TSIG logic in
+      lib/dns/dnssec.c, lib/dns/message.c, lib/dns/tsig.c.
+    - CVE-2017-3142
+    - CVE-2017-3143
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 29 Jun 2017 07:51:25 -0400
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.6) xenial-security; urgency=medium
 
   * SECURITY UPDATE: Denial of Service due to an error handling
