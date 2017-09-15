@@ -1,3 +1,15 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.8) xenial-security; urgency=medium
+
+  * SECURITY REGRESSION: regression in last security update
+    - debian/patches/CVE-2017-3142-regression.patch: fix verification of
+      TSIG signed TCP message sequences where not all the messages contain
+      TSIG records in lib/dns/tsig.c, aded test to
+      lib/dns/tests/Makefile.in, lib/dns/tests/tsig_test.c.
+  * debian/patches/update_keys.patch: Update the built in managed keys to
+    include the upcoming root KSK in bind.keys, bind.keys.h.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 15 Sep 2017 07:50:24 -0400
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.7) xenial-security; urgency=medium
 
   * SECURITY UPDATE: TSIG authentication issues
