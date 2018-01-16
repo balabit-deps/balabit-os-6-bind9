@@ -1,3 +1,19 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.10) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: assertion failure via improper cleanup
+    - debian/patches/CVE-2017-3145.patch: fix cleanup handling in
+      lib/dns/resolver.c.
+    - CVE-2017-3145
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 16 Jan 2018 07:27:16 -0500
+
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.9) xenial; urgency=medium
+
+  * d/bind9.service: source the defaults file and start the daemon with the
+    options set there (LP: #1565060).
+
+ -- Andreas Hasenack <andreas@canonical.com>  Mon, 06 Nov 2017 17:26:27 -0200
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.8) xenial-security; urgency=medium
 
   * SECURITY REGRESSION: regression in last security update

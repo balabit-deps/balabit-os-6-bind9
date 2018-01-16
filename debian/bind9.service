@@ -4,7 +4,8 @@ Documentation=man:named(8)
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/named -f -u bind
+EnvironmentFile=/etc/default/bind9
+ExecStart=/usr/sbin/named -f $OPTIONS
 ExecReload=/usr/sbin/rndc reload
 ExecStop=/usr/sbin/rndc stop
 
