@@ -25,3 +25,4 @@ CVE-2017-3042,3043.patch
 CVE-2017-3142-regression.patch
 update_keys.patch
 CVE-2017-3145.patch
+CVE-2018-5740.patch

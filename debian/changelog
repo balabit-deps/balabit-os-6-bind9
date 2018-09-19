@@ -1,3 +1,13 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.11) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: denial of service crash when deny-answer-aliases
+    option is used
+    - debian/patches/CVE-2018-5740.patch: explicit DNAME query could
+      trigger a crash if deny-answer-aliases was set
+    - CVE-2018-5740
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 19 Sep 2018 14:18:30 +0200
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.10) xenial-security; urgency=medium
 
   * SECURITY UPDATE: assertion failure via improper cleanup
