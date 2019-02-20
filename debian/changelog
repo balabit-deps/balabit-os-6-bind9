@@ -1,3 +1,21 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.12) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: assertion failure when a trust anchor rolls over to an
+    unsupported key algorithm when using managed-keys
+    - debian/patches/CVE-2018-5745-pre.patch: enhance rfc 5011 logging in
+      lib/dns/zone.c, 
+    - debian/patches/CVE-2018-5745.patch: properly handle situations when
+      the key tag cannot be computed in lib/dns/include/dst/dst.h,
+      lib/dns/zone.c.
+    - CVE-2018-5745
+  * SECURITY UPDATE: Controls for zone transfers may not be properly
+    applied to Dynamically Loadable Zones (DLZs) if the zones are writable
+    - debian/patches/CVE-2019-6465.patch: handle zone transfers marked in
+      the zone table as a DLZ zone bin/named/xfrout.c.
+    - CVE-2019-6465
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 20 Feb 2019 10:07:28 +0100
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.11) xenial-security; urgency=medium
 
   * SECURITY UPDATE: denial of service crash when deny-answer-aliases
