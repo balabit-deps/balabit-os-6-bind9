@@ -29,3 +29,5 @@ CVE-2018-5740.patch
 CVE-2018-5745-pre.patch
 CVE-2018-5745.patch
 CVE-2019-6465.patch
+CVE-2018-5743.patch
+CVE-2018-5743-atomic-fix.patch

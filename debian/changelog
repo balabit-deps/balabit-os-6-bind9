@@ -1,3 +1,19 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.14) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: limiting simultaneous TCP clients is ineffective
+    - debian/patches/CVE-2018-5743.patch: add reference counting in
+      bin/named/client.c, bin/named/include/named/client.h,
+      bin/named/include/named/interfacemgr.h, bin/named/interfacemgr.c,
+      lib/isc/include/isc/quota.h, lib/isc/quota.c,
+      lib/isc/win32/libisc.def.in.
+    - debian/patches/CVE-2018-5743-atomic-fix.patch: replace atomic
+      operations with isc_refcount reference counting in
+      bin/named/client.c, bin/named/include/named/interfacemgr.h,
+      bin/named/interfacemgr.c.
+    - CVE-2018-5743
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 24 Apr 2019 06:17:28 -0400
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.12) xenial-security; urgency=medium
 
   * SECURITY UPDATE: assertion failure when a trust anchor rolls over to an
