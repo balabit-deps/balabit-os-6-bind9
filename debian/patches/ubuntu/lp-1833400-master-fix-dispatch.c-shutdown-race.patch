@@ -1,0 +1,47 @@
+From 019132b70c368bc9abca0034d07b324bb7cb6eb2 Mon Sep 17 00:00:00 2001
+From: Evan Hunt <each@isc.org>
+Date: Thu, 20 Apr 2017 17:41:37 -0700
+Subject: [PATCH] [master] fix dispatch.c shutdown race
+
+4952.	[bug]		A race condition on shutdown could trigger an
+			assertion failure in dispatch.c. [RT #43822]
+
+Origin: backport, https://gitlab.isc.org/isc-projects/bind9/commit/70590c691b410303ac44f879e0a3b2b58711a3de
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/1833400
+Bug: https://bugs.isc.org/Public/Bug/Display.html?id=43822
+Last-Update: 2019-08-07
+
+---
+ CHANGES                        | 3 +++
+ lib/dns/dispatch.c             | 5 ++++-
+ lib/dns/include/dns/dispatch.h | 3 +++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
+
+--- a/lib/dns/dispatch.c
++++ b/lib/dns/dispatch.c
+@@ -3691,9 +3691,12 @@ dns_dispatch_importrecv(dns_dispatch_t *
+ 	REQUIRE((disp->attributes & DNS_DISPATCHATTR_NOLISTEN) != 0);
+ 	REQUIRE(event != NULL);
+ 
+-	sevent = (isc_socketevent_t *)event;
++	if ((disp->attributes & DNS_DISPATCHATTR_NOLISTEN) == 0)
++		return;
+ 
++	sevent = (isc_socketevent_t *)event;
+ 	INSIST(sevent->n <= disp->mgr->buffersize);
++
+ 	newsevent = (isc_socketevent_t *)
+ 		    isc_event_allocate(disp->mgr->mctx, NULL,
+ 				      DNS_EVENT_IMPORTRECVDONE, udp_shrecv,
+--- a/lib/dns/include/dns/dispatch.h
++++ b/lib/dns/include/dns/dispatch.h
+@@ -524,6 +524,9 @@ dns_dispatch_importrecv(dns_dispatch_t *
+  * shared between dispatchers and clients.  If the dispatcher fails to copy
+  * or send the event, nothing happens.
+  *
++ * If the attribute DNS_DISPATCHATTR_NOLISTEN is not set, then
++ * the dispatch is already handling a recv; return immediately.
++ *
+  * Requires:
+  *\li 	disp is valid, and the attribute DNS_DISPATCHATTR_NOLISTEN is set.
+  * 	event != NULL

@@ -1,0 +1,33 @@
+From a94d68ce432b9e11c4ae91d48ee257b1675f86d7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20K=C4=99pie=C5=84?= <michal@isc.org>
+Date: Tue, 24 Oct 2017 21:02:05 +0200
+Subject: [PATCH] [master] Remove REQUIRE preventing change 4592 from working
+
+Change 4592 was supposed to replace a REQUIRE with a conditional return.
+While the latter was added, the former was not removed.  Remove the
+relevant REQUIRE to fix RT #43822 for good.
+
+Origin: upstream, https://gitlab.isc.org/isc-projects/bind9/commit/dadca599daec203a24dd6beee0590c038f9301c3
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/1833400
+Bug: https://bugs.isc.org/Public/Bug/Display.html?id=43822
+Last-Update: 2019-08-07
+
+---
+ lib/dns/dispatch.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/lib/dns/dispatch.c b/lib/dns/dispatch.c
+index 4f668a102d..607a730395 100644
+--- a/lib/dns/dispatch.c
++++ b/lib/dns/dispatch.c
+@@ -3718,7 +3718,6 @@ dns_dispatch_importrecv(dns_dispatch_t *disp, isc_event_t *event) {
+ 	isc_socketevent_t *sevent, *newsevent;
+ 
+ 	REQUIRE(VALID_DISPATCH(disp));
+-	REQUIRE((disp->attributes & DNS_DISPATCHATTR_NOLISTEN) != 0);
+ 	REQUIRE(event != NULL);
+ 
+ 	if ((disp->attributes & DNS_DISPATCHATTR_NOLISTEN) == 0)
+-- 
+2.22.0
+
