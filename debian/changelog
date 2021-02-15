@@ -1,3 +1,12 @@
+bind9 (1:9.10.3.dfsg.P4-8ubuntu1.18) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: off-by-one bug in ISC SPNEGO implementation
+    - debian/patches/CVE-2020-8625.patch: properly calculate length in
+      lib/dns/spnego.c.
+    - CVE-2020-8625
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 15 Feb 2021 08:09:41 -0500
+
 bind9 (1:9.10.3.dfsg.P4-8ubuntu1.17) xenial-security; urgency=medium
 
   * SECURITY UPDATE: A truncated TSIG response can lead to an assertion
