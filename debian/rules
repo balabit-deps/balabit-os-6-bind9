@@ -70,6 +70,7 @@ stamps/configure: stamps/prepare
 		--enable-rrl \
 		--enable-filter-aaaa \
 		--enable-native-pkcs11 \
+		--disable-isc-spnego \
 		--with-pkcs11=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)/softhsm/libsofthsm2.so \
 		$(EXTRA_FEATURES)
 
